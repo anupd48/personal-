@@ -1,0 +1,925 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>A Message From My Heart</title>
+<link href="https://fonts.googleapis.com/css2?family=Cinzel+Decorative:wght@400;700&family=Crimson+Pro:ital,wght@0,300;0,400;1,300;1,400&family=Share+Tech+Mono&display=swap" rel="stylesheet">
+<style>
+  *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+  :root {
+    --gold: #f0c040;
+    --gold2: #e8a020;
+    --rose: #e8607a;
+    --rose2: #c03050;
+    --deep: #0a0612;
+    --deep2: #120820;
+    --purple: #2a1045;
+    --text: #f5ecd0;
+    --muted: #a89878;
+    --white: #fff8f0;
+  }
+
+  html, body {
+    width: 100%; height: 100%;
+    background: var(--deep);
+    color: var(--text);
+    font-family: 'Crimson Pro', serif;
+    overflow: hidden;
+    user-select: none;
+  }
+
+  /* ── CANVAS LAYER ── */
+  #bgCanvas {
+    position: fixed; top: 0; left: 0;
+    width: 100%; height: 100%;
+    z-index: 0; pointer-events: none;
+  }
+
+  /* ── SCREENS ── */
+  .screen {
+    position: fixed; inset: 0;
+    display: flex; flex-direction: column;
+    align-items: center; justify-content: center;
+    z-index: 10; padding: 2rem;
+    opacity: 0; pointer-events: none;
+    transition: opacity 0.8s ease;
+  }
+  .screen.active { opacity: 1; pointer-events: all; }
+
+  /* ── TITLE SCREEN ── */
+  #s-title .game-title {
+    font-family: 'Cinzel Decorative', serif;
+    font-size: clamp(2rem, 6vw, 4.5rem);
+    color: var(--gold);
+    text-shadow: 0 0 40px rgba(240,192,64,0.6), 0 2px 0 rgba(0,0,0,0.8);
+    text-align: center; line-height: 1.2;
+    animation: titlePulse 3s ease-in-out infinite;
+    margin-bottom: 0.3em;
+  }
+  #s-title .subtitle {
+    font-size: clamp(1rem, 2.5vw, 1.4rem);
+    color: var(--muted); font-style: italic;
+    letter-spacing: 0.15em; margin-bottom: 3rem;
+  }
+  @keyframes titlePulse {
+    0%,100% { text-shadow: 0 0 40px rgba(240,192,64,0.6), 0 2px 0 rgba(0,0,0,0.8); }
+    50% { text-shadow: 0 0 80px rgba(240,192,64,1), 0 0 120px rgba(240,192,64,0.4), 0 2px 0 rgba(0,0,0,0.8); }
+  }
+
+  /* ── DIALOGUE BOX ── */
+  .dialogue-box {
+    background: linear-gradient(135deg, rgba(10,6,18,0.97) 0%, rgba(42,16,69,0.97) 100%);
+    border: 1px solid var(--gold);
+    border-radius: 4px;
+    padding: 2rem 2.5rem;
+    max-width: 700px; width: 100%;
+    position: relative;
+    box-shadow: 0 0 60px rgba(240,192,64,0.15), inset 0 0 40px rgba(42,16,69,0.5);
+  }
+  .dialogue-box::before, .dialogue-box::after {
+    content: ''; position: absolute;
+    width: 12px; height: 12px;
+    border-color: var(--gold2); border-style: solid;
+  }
+  .dialogue-box::before { top: -1px; left: -1px; border-width: 2px 0 0 2px; }
+  .dialogue-box::after  { bottom: -1px; right: -1px; border-width: 0 2px 2px 0; }
+
+  .speaker-name {
+    font-family: 'Cinzel Decorative', serif;
+    font-size: 0.85rem; color: var(--gold);
+    letter-spacing: 0.2em; margin-bottom: 0.8rem;
+    text-transform: uppercase;
+  }
+  .dialogue-text {
+    font-size: clamp(1rem, 2.5vw, 1.25rem);
+    line-height: 1.8; color: var(--white);
+    font-weight: 300; min-height: 4em;
+  }
+  .dialogue-cursor {
+    display: inline-block; width: 2px; height: 1em;
+    background: var(--gold); margin-left: 2px;
+    animation: blink 1s step-end infinite; vertical-align: middle;
+  }
+  @keyframes blink { 0%,100%{opacity:1} 50%{opacity:0} }
+
+  .next-hint {
+    text-align: right; margin-top: 1rem;
+    font-family: 'Share Tech Mono', monospace;
+    font-size: 0.75rem; color: var(--muted);
+    animation: fadeHint 1.5s ease-in-out infinite;
+  }
+  @keyframes fadeHint { 0%,100%{opacity:0.4} 50%{opacity:1} }
+
+  /* ── CHARACTER PORTRAIT ── */
+  .portrait-wrap {
+    width: 120px; height: 120px; margin-bottom: 1.5rem;
+    position: relative;
+  }
+  .portrait-ring {
+    width: 100%; height: 100%; border-radius: 50%;
+    border: 2px solid var(--gold);
+    display: flex; align-items: center; justify-content: center;
+    font-size: 4rem;
+    background: radial-gradient(circle, rgba(42,16,69,1) 0%, rgba(10,6,18,1) 100%);
+    box-shadow: 0 0 30px rgba(240,192,64,0.3);
+    animation: portraitGlow 2s ease-in-out infinite;
+  }
+  @keyframes portraitGlow {
+    0%,100% { box-shadow: 0 0 30px rgba(240,192,64,0.3); }
+    50% { box-shadow: 0 0 60px rgba(240,192,64,0.6); }
+  }
+
+  /* ── SORRY SCREEN ── */
+  #s-sorry .sorry-items {
+    display: flex; flex-direction: column; gap: 0.7rem;
+    margin: 1.2rem 0; max-height: 260px; overflow-y: auto;
+    padding-right: 0.5rem;
+  }
+  .sorry-item {
+    display: flex; align-items: flex-start; gap: 0.8rem;
+    padding: 0.7rem 1rem;
+    background: rgba(232,96,122,0.08);
+    border-left: 2px solid var(--rose);
+    border-radius: 2px;
+    font-size: 1rem; color: var(--white);
+    opacity: 0; transform: translateX(-20px);
+    transition: opacity 0.4s ease, transform 0.4s ease;
+  }
+  .sorry-item.show { opacity: 1; transform: translateX(0); }
+  .sorry-item .icon { font-size: 1.2rem; flex-shrink: 0; margin-top: 0.1rem; }
+
+  /* ── STATS / XP BAR ── */
+  .xp-section { margin-top: 1.5rem; width: 100%; max-width: 700px; }
+  .xp-label {
+    font-family: 'Share Tech Mono', monospace;
+    font-size: 0.75rem; color: var(--muted);
+    display: flex; justify-content: space-between;
+    margin-bottom: 0.4rem;
+  }
+  .xp-bar-bg {
+    height: 8px; background: rgba(255,255,255,0.1);
+    border-radius: 4px; overflow: hidden;
+  }
+  .xp-bar-fill {
+    height: 100%; border-radius: 4px; width: 0%;
+    transition: width 1.5s cubic-bezier(0.25,1,0.5,1);
+  }
+  .xp-love { background: linear-gradient(90deg, var(--rose2), var(--rose), #ff9eb5); }
+  .xp-trust { background: linear-gradient(90deg, #1a4a8a, #4080e0, #80c0ff); }
+  .xp-forever { background: linear-gradient(90deg, var(--gold2), var(--gold), #fff0a0); }
+
+  /* ── PROPOSAL SCREEN ── */
+  #s-proposal {
+    gap: 0;
+  }
+  .ring-container {
+    position: relative; margin-bottom: 2rem;
+    animation: ringFloat 3s ease-in-out infinite;
+  }
+  @keyframes ringFloat {
+    0%,100% { transform: translateY(0) rotate(-5deg); }
+    50% { transform: translateY(-15px) rotate(5deg); }
+  }
+  .ring-svg { width: 140px; height: 140px; filter: drop-shadow(0 0 20px rgba(240,192,64,0.8)); }
+
+  .proposal-text {
+    font-family: 'Cinzel Decorative', serif;
+    font-size: clamp(1.5rem, 5vw, 3rem);
+    color: var(--gold);
+    text-align: center; line-height: 1.4;
+    text-shadow: 0 0 40px rgba(240,192,64,0.6);
+    margin-bottom: 2rem;
+    animation: proposalGlow 2s ease-in-out infinite;
+  }
+  @keyframes proposalGlow {
+    0%,100% { text-shadow: 0 0 40px rgba(240,192,64,0.6); }
+    50% { text-shadow: 0 0 80px rgba(240,192,64,1), 0 0 140px rgba(240,192,64,0.4); }
+  }
+
+  /* ── CHOICE BUTTONS ── */
+  .choice-box {
+    display: flex; gap: 1.5rem; justify-content: center;
+    flex-wrap: wrap; margin-top: 1rem;
+  }
+  .choice-btn {
+    font-family: 'Cinzel Decorative', serif;
+    font-size: 1rem; padding: 0.9rem 2.5rem;
+    border: none; border-radius: 3px; cursor: pointer;
+    letter-spacing: 0.1em; position: relative; overflow: hidden;
+    transition: transform 0.2s, box-shadow 0.2s;
+  }
+  .choice-btn::before {
+    content: ''; position: absolute; inset: 0;
+    background: rgba(255,255,255,0.15);
+    transform: translateX(-100%);
+    transition: transform 0.3s ease;
+  }
+  .choice-btn:hover::before { transform: translateX(0); }
+  .choice-btn:hover { transform: translateY(-2px); }
+  .btn-yes {
+    background: linear-gradient(135deg, #c07010, var(--gold), #ffe080);
+    color: #1a0a00;
+    box-shadow: 0 0 30px rgba(240,192,64,0.4);
+  }
+  .btn-yes:hover { box-shadow: 0 0 60px rgba(240,192,64,0.8); }
+  .btn-no {
+    background: transparent;
+    color: var(--muted); border: 1px solid var(--muted);
+    font-size: 0.75rem; padding: 0.5rem 1.2rem;
+    position: relative;
+  }
+
+  /* ── YES SCREEN ── */
+  #s-yes { gap: 1.5rem; }
+  .yes-title {
+    font-family: 'Cinzel Decorative', serif;
+    font-size: clamp(2rem, 7vw, 5rem);
+    background: linear-gradient(135deg, var(--rose), var(--gold), var(--rose));
+    -webkit-background-clip: text; -webkit-text-fill-color: transparent;
+    text-align: center; animation: shimmer 2s linear infinite;
+    background-size: 200% 100%;
+  }
+  @keyframes shimmer { 0%{background-position:200% 0} 100%{background-position:-200% 0} }
+  .yes-sub {
+    font-size: clamp(1rem, 2.5vw, 1.4rem);
+    font-style: italic; color: var(--white); text-align: center;
+    line-height: 1.8; max-width: 600px;
+  }
+  .heart-big { font-size: 5rem; animation: heartbeat 0.8s ease-in-out infinite; }
+  @keyframes heartbeat {
+    0%,100%{transform:scale(1)} 30%{transform:scale(1.2)} 60%{transform:scale(0.95)}
+  }
+
+  /* ── GENERIC BTN ── */
+  .btn-start {
+    font-family: 'Cinzel Decorative', serif;
+    font-size: 1rem; padding: 0.9rem 3rem;
+    background: transparent; color: var(--gold);
+    border: 1px solid var(--gold); border-radius: 3px;
+    cursor: pointer; letter-spacing: 0.15em;
+    transition: all 0.3s; position: relative; overflow: hidden;
+  }
+  .btn-start::after {
+    content: ''; position: absolute; inset: 0;
+    background: rgba(240,192,64,0.1); opacity: 0;
+    transition: opacity 0.3s;
+  }
+  .btn-start:hover { box-shadow: 0 0 30px rgba(240,192,64,0.4); }
+  .btn-start:hover::after { opacity: 1; }
+
+  /* ── SCANLINES OVERLAY ── */
+  #scanlines {
+    position: fixed; inset: 0; z-index: 5; pointer-events: none;
+    background: repeating-linear-gradient(
+      to bottom, transparent 0px, transparent 3px,
+      rgba(0,0,0,0.03) 3px, rgba(0,0,0,0.03) 4px
+    );
+    opacity: 0.4;
+  }
+
+  /* ── VIGNETTE ── */
+  #vignette {
+    position: fixed; inset: 0; z-index: 4; pointer-events: none;
+    background: radial-gradient(ellipse at center,
+      transparent 40%, rgba(0,0,0,0.7) 100%);
+  }
+
+  /* ── NO BUTTON CHASE ── */
+  #btn-no-wrapper { position: relative; display: inline-block; }
+
+  /* ── LOADING BAR ── */
+  #loader {
+    position: fixed; inset: 0; z-index: 100;
+    background: var(--deep);
+    display: flex; flex-direction: column;
+    align-items: center; justify-content: center; gap: 1.5rem;
+  }
+  #loader .load-title {
+    font-family: 'Share Tech Mono', monospace;
+    font-size: 0.9rem; color: var(--gold); letter-spacing: 0.2em;
+  }
+  #loader .load-bar-bg {
+    width: 300px; height: 4px;
+    background: rgba(255,255,255,0.1); border-radius: 2px; overflow: hidden;
+  }
+  #loader .load-bar-fill {
+    height: 100%; width: 0%; border-radius: 2px;
+    background: linear-gradient(90deg, var(--rose), var(--gold));
+    transition: width 0.1s linear;
+  }
+  #loader .load-msg {
+    font-family: 'Share Tech Mono', monospace;
+    font-size: 0.7rem; color: var(--muted);
+    min-height: 1em;
+  }
+
+  /* ── CHAPTER CARD ── */
+  .chapter-card {
+    position: fixed; inset: 0; z-index: 200;
+    display: flex; align-items: center; justify-content: center;
+    pointer-events: none;
+    background: var(--deep);
+    animation: chapterBg 2.8s ease forwards;
+  }
+  @keyframes chapterBg {
+    0%   { opacity: 0; }
+    12%  { opacity: 1; }
+    75%  { opacity: 1; }
+    100% { opacity: 0; }
+  }
+  .chapter-inner {
+    text-align: center;
+    display: flex; flex-direction: column; align-items: center; gap: 1rem;
+    padding: 2.5rem 3rem;
+    opacity: 0;
+    animation: chapterAnim 2.8s ease forwards;
+  }
+  .chapter-rule {
+    display: flex; align-items: center; gap: 1rem; width: 100%;
+  }
+  .chapter-rule-line {
+    flex: 1; height: 1px;
+    background: linear-gradient(90deg, transparent, var(--gold2), transparent);
+  }
+  .chapter-rule-diamond {
+    width: 8px; height: 8px;
+    background: var(--gold);
+    transform: rotate(45deg); flex-shrink: 0;
+  }
+  .chapter-label {
+    font-family: 'Share Tech Mono', monospace;
+    font-size: 0.7rem; color: var(--muted);
+    letter-spacing: 0.4em; text-transform: uppercase;
+  }
+  .chapter-title {
+    font-family: 'Cinzel Decorative', serif;
+    font-size: clamp(1.6rem, 5vw, 3rem);
+    color: var(--gold);
+    line-height: 1.3;
+    text-shadow: 0 0 60px rgba(240,192,64,0.5);
+    max-width: 80vw;
+    word-break: break-word;
+  }
+  @keyframes chapterAnim {
+    0%   { opacity: 0; transform: translateY(12px); }
+    18%  { opacity: 1; transform: translateY(0); }
+    72%  { opacity: 1; transform: translateY(0); }
+    100% { opacity: 0; transform: translateY(-8px); }
+  }
+
+  /* scrollbar */
+  .sorry-items::-webkit-scrollbar { width: 4px; }
+  .sorry-items::-webkit-scrollbar-track { background: transparent; }
+  .sorry-items::-webkit-scrollbar-thumb { background: var(--gold2); border-radius: 2px; }
+</style>
+</head>
+<body>
+
+<canvas id="bgCanvas"></canvas>
+<div id="scanlines"></div>
+<div id="vignette"></div>
+
+<!-- LOADER -->
+<div id="loader">
+  <div class="load-title">LOADING SAVE FILE: "US"</div>
+  <div class="load-bar-bg"><div class="load-bar-fill" id="loadFill"></div></div>
+  <div class="load-msg" id="loadMsg">Initializing feelings...</div>
+</div>
+
+<!-- SCREEN 1: TITLE -->
+<div class="screen" id="s-title">
+  <div class="portrait-wrap"><div class="portrait-ring">💑</div></div>
+  <h1 class="game-title">A Quest of<br>the Heart</h1>
+  <p class="subtitle">— An Honest Confession —</p>
+  <button class="btn-start" id="btn-begin">▶ &nbsp; Begin</button>
+</div>
+
+<!-- SCREEN 2: APOLOGY OPENING -->
+<div class="screen" id="s-apology-open">
+  <div class="portrait-wrap"><div class="portrait-ring">💔</div></div>
+  <div class="dialogue-box">
+    <div class="speaker-name">⚔ From My Heart</div>
+    <div class="dialogue-text" id="apo-text1"></div>
+    <div class="next-hint" id="hint1">[ click to continue ]</div>
+  </div>
+</div>
+
+<!-- SCREEN 3: SORRY LIST -->
+<div class="screen" id="s-sorry">
+  <div class="dialogue-box" style="max-width:700px">
+    <div class="speaker-name">📜 My Confessions — Things I'm Truly Sorry For</div>
+    <div class="sorry-items" id="sorryList"></div>
+  </div>
+  <div style="max-width:700px;width:100%;margin-top:1rem">
+    <div class="xp-section">
+      <div class="xp-label"><span>SINCERITY LEVEL</span><span id="sinLvl">0%</span></div>
+      <div class="xp-bar-bg"><div class="xp-bar-fill xp-love" id="sinBar"></div></div>
+    </div>
+    <div style="margin-top:1.5rem; text-align:center">
+      <button class="btn-start" id="btn-after-sorry">I hear your heart →</button>
+    </div>
+  </div>
+</div>
+
+<!-- SCREEN 4: APOLOGY CLOSE / PROMISE -->
+<div class="screen" id="s-promise">
+  <div class="portrait-wrap"><div class="portrait-ring">🌹</div></div>
+  <div class="dialogue-box">
+    <div class="speaker-name">💬 My Promise To You</div>
+    <div class="dialogue-text" id="promise-text"></div>
+    <div class="next-hint" id="hint2">[ click to continue ]</div>
+  </div>
+</div>
+
+<!-- SCREEN 5: STATS -->
+<div class="screen" id="s-stats">
+  <div class="dialogue-box" style="max-width:680px; width:100%">
+    <div class="speaker-name">📊 Our Love Stats</div>
+    <div style="margin:1.2rem 0; display:flex; flex-direction:column; gap:1.2rem">
+      <div>
+        <div class="xp-label"><span>❤ LOVE POWER</span><span id="lp">0 / 100</span></div>
+        <div class="xp-bar-bg"><div class="xp-bar-fill xp-love" id="lpBar"></div></div>
+      </div>
+      <div>
+        <div class="xp-label"><span>🛡 TRUST RESTORED</span><span id="tr">0 / 100</span></div>
+        <div class="xp-bar-bg"><div class="xp-bar-fill xp-trust" id="trBar"></div></div>
+      </div>
+      <div>
+        <div class="xp-label"><span>✨ FOREVER POTENTIAL</span><span id="fp">0 / 100</span></div>
+        <div class="xp-bar-bg"><div class="xp-bar-fill xp-forever" id="fpBar"></div></div>
+      </div>
+    </div>
+    <div style="text-align:center;margin-top:1.5rem">
+      <button class="btn-start" id="btn-to-proposal">Proceed to Final Chapter →</button>
+    </div>
+  </div>
+</div>
+
+<!-- SCREEN 6: PROPOSAL -->
+<div class="screen" id="s-proposal">
+  <div class="ring-container">
+    <svg class="ring-svg" viewBox="0 0 140 140" xmlns="http://www.w3.org/2000/svg">
+      <defs>
+        <radialGradient id="rg1" cx="50%" cy="40%">
+          <stop offset="0%" stop-color="#fff8e0"/>
+          <stop offset="50%" stop-color="#f0c040"/>
+          <stop offset="100%" stop-color="#a06010"/>
+        </radialGradient>
+        <radialGradient id="rg2" cx="50%" cy="30%">
+          <stop offset="0%" stop-color="#e0f0ff"/>
+          <stop offset="40%" stop-color="#80c0ff"/>
+          <stop offset="100%" stop-color="#2060c0"/>
+        </radialGradient>
+      </defs>
+      <!-- ring band -->
+      <ellipse cx="70" cy="95" rx="42" ry="14" fill="url(#rg1)" stroke="#c08020" stroke-width="1.5"/>
+      <ellipse cx="70" cy="82" rx="42" ry="14" fill="url(#rg1)" stroke="#c08020" stroke-width="1.5"/>
+      <rect x="28" y="82" width="84" height="13" fill="url(#rg1)"/>
+      <line x1="28" y1="82" x2="28" y2="95" stroke="#c08020" stroke-width="1.5"/>
+      <line x1="112" y1="82" x2="112" y2="95" stroke="#c08020" stroke-width="1.5"/>
+      <!-- gem setting prongs -->
+      <polygon points="62,60 70,45 78,60 70,65" fill="#c08020"/>
+      <!-- main gem -->
+      <polygon points="70,30 88,52 70,62 52,52" fill="url(#rg2)" stroke="#4090e0" stroke-width="1"/>
+      <polygon points="70,30 88,52 70,44" fill="rgba(255,255,255,0.4)"/>
+      <polygon points="70,30 52,52 70,44" fill="rgba(255,255,255,0.2)"/>
+      <!-- sparkles -->
+      <g fill="#fff8a0" opacity="0.9">
+        <polygon points="25,25 27,30 22,28 27,26" />
+        <polygon points="115,35 117,41 112,38 117,37" />
+        <polygon points="35,65 37,70 32,68 37,66" />
+        <polygon points="105,20 107,26 102,23 107,22" />
+      </g>
+    </svg>
+  </div>
+  <div class="proposal-text">My Love,<br>Will You Marry Me?</div>
+  <div class="choice-box">
+    <button class="choice-btn btn-yes" id="btn-yes">💍 &nbsp; Yes, Always</button>
+    <div id="btn-no-wrapper">
+      <button class="choice-btn btn-no" id="btn-no">Maybe not...</button>
+    </div>
+  </div>
+  <div style="margin-top:1.5rem; font-size:0.85rem; color:var(--muted); font-style:italic; text-align:center;">
+    You are my greatest adventure. ✨
+  </div>
+</div>
+
+<!-- SCREEN 7: YES! -->
+<div class="screen" id="s-yes">
+  <div class="heart-big">💍</div>
+  <div class="yes-title">She Said Yes!</div>
+  <div class="yes-sub" id="yes-sub">
+    And just like that, the most beautiful chapter of our story begins...<br>
+    I promise to love you every single day, more than yesterday, less than tomorrow.
+  </div>
+  <div style="font-family:'Share Tech Mono',monospace; font-size:0.7rem; color:var(--muted); margin-top:1rem; letter-spacing:0.1em;">
+    ∞ ACHIEVEMENT UNLOCKED: "FOREVER TOGETHER" ∞
+  </div>
+</div>
+
+<!-- CHAPTER OVERLAY -->
+<div class="chapter-card" id="chapterCard" style="display:none">
+  <div class="chapter-inner" id="chapterInner">
+    <div class="chapter-rule">
+      <div class="chapter-rule-line"></div>
+      <div class="chapter-rule-diamond"></div>
+      <div class="chapter-rule-line"></div>
+    </div>
+    <div class="chapter-label" id="chapterLabel"></div>
+    <div class="chapter-title" id="chapterTitle"></div>
+    <div class="chapter-rule">
+      <div class="chapter-rule-line"></div>
+      <div class="chapter-rule-diamond"></div>
+      <div class="chapter-rule-line"></div>
+    </div>
+  </div>
+</div>
+
+<script>
+// ════════════════════════════════════════════
+//  CANVAS BACKGROUND
+// ════════════════════════════════════════════
+const canvas = document.getElementById('bgCanvas');
+const ctx = canvas.getContext('2d');
+
+let W, H;
+function resize() {
+  W = canvas.width = window.innerWidth;
+  H = canvas.height = window.innerHeight;
+}
+resize();
+window.addEventListener('resize', resize);
+
+// particles
+const PCOUNT = 120;
+const particles = Array.from({length: PCOUNT}, () => mkParticle());
+function mkParticle() {
+  return {
+    x: Math.random() * (window.innerWidth || 800),
+    y: Math.random() * (window.innerHeight || 600),
+    r: Math.random() * 1.5 + 0.2,
+    vx: (Math.random() - 0.5) * 0.2,
+    vy: -Math.random() * 0.3 - 0.1,
+    alpha: Math.random() * 0.8 + 0.2,
+    color: Math.random() < 0.5
+      ? `rgba(240,192,64,${Math.random()*0.8+0.2})`
+      : `rgba(232,96,122,${Math.random()*0.6+0.2})`
+  };
+}
+
+// shooting stars
+const stars = [];
+let starTimer = 0;
+function addStar() {
+  const y = Math.random() * H * 0.5;
+  stars.push({ x: -50, y, vx: 4+Math.random()*4, vy: 0.5+Math.random(), alpha: 1, trail: [] });
+}
+
+// fireworks for YES screen
+const fireworks = [];
+let fwActive = false;
+function addFirework() {
+  const x = Math.random() * W;
+  const y = Math.random() * H * 0.6;
+  const hue = Math.random() < 0.5 ? 45 : 340;
+  for (let i = 0; i < 60; i++) {
+    const angle = (i / 60) * Math.PI * 2;
+    const speed = 2 + Math.random() * 3;
+    fireworks.push({
+      x, y, vx: Math.cos(angle) * speed,
+      vy: Math.sin(angle) * speed - 1,
+      alpha: 1, color: `hsl(${hue + Math.random()*30 - 15},100%,70%)`
+    });
+  }
+}
+
+function animBG(t) {
+  ctx.clearRect(0, 0, W, H);
+
+  // gradient bg
+  const grd = ctx.createRadialGradient(W/2, H/2, 0, W/2, H/2, Math.max(W,H)*0.8);
+  grd.addColorStop(0, '#160a28');
+  grd.addColorStop(0.5, '#0e0618');
+  grd.addColorStop(1, '#080410');
+  ctx.fillStyle = grd;
+  ctx.fillRect(0, 0, W, H);
+
+  // particles
+  for (const p of particles) {
+    p.x += p.vx; p.y += p.vy;
+    if (p.y < -5) { p.y = H + 5; p.x = Math.random() * W; }
+    if (p.x < -5 || p.x > W + 5) { p.x = Math.random() * W; p.y = H + 5; }
+    ctx.beginPath();
+    ctx.arc(p.x, p.y, p.r, 0, Math.PI * 2);
+    ctx.fillStyle = p.color;
+    ctx.fill();
+  }
+
+  // shooting stars
+  starTimer++;
+  if (starTimer > 90) { addStar(); starTimer = 0; }
+  for (let i = stars.length - 1; i >= 0; i--) {
+    const s = stars[i];
+    s.trail.push({x: s.x, y: s.y});
+    if (s.trail.length > 18) s.trail.shift();
+    s.x += s.vx; s.y += s.vy; s.alpha -= 0.018;
+    if (s.alpha <= 0 || s.x > W + 100) { stars.splice(i, 1); continue; }
+    for (let j = 0; j < s.trail.length; j++) {
+      const a = (j / s.trail.length) * s.alpha * 0.7;
+      ctx.beginPath();
+      ctx.arc(s.trail[j].x, s.trail[j].y, 1, 0, Math.PI*2);
+      ctx.fillStyle = `rgba(255,240,180,${a})`;
+      ctx.fill();
+    }
+    ctx.beginPath();
+    ctx.arc(s.x, s.y, 1.5, 0, Math.PI*2);
+    ctx.fillStyle = `rgba(255,255,220,${s.alpha})`;
+    ctx.fill();
+  }
+
+  // fireworks
+  if (fwActive) {
+    for (let i = fireworks.length - 1; i >= 0; i--) {
+      const f = fireworks[i];
+      f.x += f.vx; f.y += f.vy; f.vy += 0.06; f.alpha -= 0.016;
+      if (f.alpha <= 0) { fireworks.splice(i, 1); continue; }
+      ctx.beginPath();
+      ctx.arc(f.x, f.y, 2, 0, Math.PI*2);
+      ctx.fillStyle = f.color.replace(')', `,${f.alpha})`).replace('hsl', 'hsla');
+      ctx.fill();
+    }
+    if (Math.random() < 0.04) addFirework();
+  }
+
+  requestAnimationFrame(animBG);
+}
+requestAnimationFrame(animBG);
+
+// ════════════════════════════════════════════
+//  LOADER
+// ════════════════════════════════════════════
+const loadMsgs = [
+  "Initializing feelings...",
+  "Loading memories...",
+  "Calibrating heartbeat...",
+  "Rendering emotions...",
+  "Compiling love.exe...",
+  "Almost ready..."
+];
+const loadFill = document.getElementById('loadFill');
+const loadMsg = document.getElementById('loadMsg');
+let loadPct = 0, loadMsgIdx = 0;
+const loadInt = setInterval(() => {
+  loadPct += Math.random() * 8 + 3;
+  if (loadPct >= 100) { loadPct = 100; clearInterval(loadInt); }
+  loadFill.style.width = loadPct + '%';
+  if (loadPct > loadMsgIdx * 18) {
+    loadMsg.textContent = loadMsgs[Math.min(loadMsgIdx, loadMsgs.length-1)];
+    loadMsgIdx++;
+  }
+  if (loadPct >= 100) setTimeout(() => {
+    document.getElementById('loader').style.opacity = '0';
+    document.getElementById('loader').style.transition = 'opacity 0.8s';
+    setTimeout(() => {
+      document.getElementById('loader').style.display = 'none';
+      showScreen('s-title');
+    }, 800);
+  }, 400);
+}, 120);
+
+// ════════════════════════════════════════════
+//  SCREEN MANAGER
+// ════════════════════════════════════════════
+let currentScreen = null;
+function showScreen(id) {
+  if (currentScreen) document.getElementById(currentScreen).classList.remove('active');
+  currentScreen = id;
+  document.getElementById(id).classList.add('active');
+}
+
+function showChapter(label, title, cb) {
+  const card = document.getElementById('chapterCard');
+  document.getElementById('chapterLabel').textContent = label;
+  document.getElementById('chapterTitle').textContent = title;
+  card.style.display = 'flex';
+  // reset animations
+  const inner = document.getElementById('chapterInner');
+  card.style.animation = 'none'; inner.style.animation = 'none';
+  void card.offsetWidth;
+  card.style.animation = 'chapterBg 2.8s ease forwards';
+  inner.style.animation = 'chapterAnim 2.8s ease forwards';
+  setTimeout(() => { card.style.display = 'none'; if (cb) cb(); }, 2900);
+}
+
+// ════════════════════════════════════════════
+//  TYPEWRITER
+// ════════════════════════════════════════════
+function typewrite(el, text, speed, cb) {
+  el.innerHTML = '';
+  let i = 0;
+  const cursor = document.createElement('span');
+  cursor.className = 'dialogue-cursor';
+  el.appendChild(cursor);
+  const iv = setInterval(() => {
+    if (i < text.length) {
+      el.insertBefore(document.createTextNode(text[i++]), cursor);
+    } else {
+      clearInterval(iv);
+      cursor.remove();
+      if (cb) cb();
+    }
+  }, speed);
+  return iv;
+}
+
+// ════════════════════════════════════════════
+//  FLOW
+// ════════════════════════════════════════════
+
+// -- TITLE → APOLOGY OPEN
+document.getElementById('btn-begin').addEventListener('click', () => {
+  showChapter('Chapter I', 'The Confession', () => {
+    showScreen('s-apology-open');
+    startApologyOpen();
+  });
+});
+
+const apoLines = [
+  "My Love... before I say what my heart has been holding for so long, I need you to hear something first.",
+  "I have not always been the person you deserved. I have made mistakes — real ones, ones that hurt you — and I carry them every single day.",
+  "This isn't just words. This is me, kneeling before you in my heart, asking you to let me make it right."
+];
+let apoIdx = 0, apoTyping = false;
+
+function startApologyOpen() {
+  apoIdx = 0;
+  document.getElementById('hint1').style.opacity = '0';
+  typewrite(document.getElementById('apo-text1'), apoLines[0], 35, () => {
+    document.getElementById('hint1').style.opacity = '1';
+    apoTyping = false;
+  });
+  apoTyping = true;
+}
+
+document.getElementById('s-apology-open').addEventListener('click', () => {
+  if (apoTyping) return;
+  apoIdx++;
+  if (apoIdx < apoLines.length) {
+    document.getElementById('hint1').style.opacity = '0';
+    apoTyping = true;
+    typewrite(document.getElementById('apo-text1'), apoLines[apoIdx], 35, () => {
+      document.getElementById('hint1').style.opacity = '1';
+      apoTyping = false;
+    });
+  } else {
+    showChapter('Chapter II', 'What I Did Wrong', () => {
+      showScreen('s-sorry');
+      startSorry();
+    });
+  }
+});
+
+// -- SORRY LIST
+const sorryItems = [
+  { icon: '😞', text: 'For every time I made you feel unimportant — when you deserved to be my whole world.' },
+  { icon: '🗣️', text: 'For the harsh words I said in anger. Words I can\'t take back, but deeply wish I could.' },
+  { icon: '🚶', text: 'For the moments I was there physically, but not emotionally. You needed all of me.' },
+  { icon: '🔇', text: 'For the times I shut down instead of opening up to you.' },
+  { icon: '⏰', text: 'For not always prioritizing you and our relationship the way you deserved.' },
+  { icon: '🙈', text: 'For ignoring how my actions made you feel, even when you told me.' },
+  { icon: '💭', text: 'For every misunderstanding I let grow instead of facing it with you.' },
+  { icon: '🌧️', text: 'For every tear you shed because of me. Each one breaks my heart.' },
+];
+
+function startSorry() {
+  const list = document.getElementById('sorryList');
+  list.innerHTML = '';
+  sorryItems.forEach((item, i) => {
+    const el = document.createElement('div');
+    el.className = 'sorry-item';
+    el.innerHTML = `<span class="icon">${item.icon}</span><span>${item.text}</span>`;
+    list.appendChild(el);
+    setTimeout(() => el.classList.add('show'), i * 300 + 200);
+  });
+
+  // animate sincerity bar
+  setTimeout(() => {
+    document.getElementById('sinBar').style.width = '94%';
+    animCount('sinLvl', 0, 94, 1500, '%');
+  }, sorryItems.length * 300 + 400);
+}
+
+function animCount(id, from, to, dur, suffix) {
+  const el = document.getElementById(id);
+  const start = performance.now();
+  function step(now) {
+    const p = Math.min((now - start) / dur, 1);
+    el.textContent = Math.round(from + (to - from) * p) + suffix;
+    if (p < 1) requestAnimationFrame(step);
+  }
+  requestAnimationFrame(step);
+}
+
+document.getElementById('btn-after-sorry').addEventListener('click', () => {
+  showChapter('Chapter III', 'My Promise', () => {
+    showScreen('s-promise');
+    startPromise();
+  });
+});
+
+// -- PROMISE
+const promiseLines = [
+  "I promise to be better. Not just to say it — to live it. Every morning I wake up, my first thought is how to be the person who deserves you.",
+  "I promise to listen more than I speak, to hold your heart gently, and to never take a single moment with you for granted.",
+  "Because loving you is the greatest privilege of my life. And I am done letting my mistakes get in the way of that."
+];
+let promIdx = 0, promTyping = false;
+
+function startPromise() {
+  promIdx = 0;
+  document.getElementById('hint2').style.opacity = '0';
+  promTyping = true;
+  typewrite(document.getElementById('promise-text'), promiseLines[0], 30, () => {
+    document.getElementById('hint2').style.opacity = '1';
+    promTyping = false;
+  });
+}
+
+document.getElementById('s-promise').addEventListener('click', () => {
+  if (promTyping) return;
+  promIdx++;
+  if (promIdx < promiseLines.length) {
+    document.getElementById('hint2').style.opacity = '0';
+    promTyping = true;
+    typewrite(document.getElementById('promise-text'), promiseLines[promIdx], 30, () => {
+      document.getElementById('hint2').style.opacity = '1';
+      promTyping = false;
+    });
+  } else {
+    showChapter('Chapter IV', 'The Stats of Us', () => {
+      showScreen('s-stats');
+      startStats();
+    });
+  }
+});
+
+// -- STATS
+function startStats() {
+  setTimeout(() => {
+    document.getElementById('lpBar').style.width = '99%';
+    animCount('lp', 0, 99, 1500, ' / 100');
+  }, 300);
+  setTimeout(() => {
+    document.getElementById('trBar').style.width = '88%';
+    animCount('tr', 0, 88, 1500, ' / 100');
+  }, 600);
+  setTimeout(() => {
+    document.getElementById('fpBar').style.width = '100%';
+    animCount('fp', 0, 100, 1500, ' / 100');
+  }, 900);
+}
+
+document.getElementById('btn-to-proposal').addEventListener('click', () => {
+  showChapter('Final Chapter', 'The Question', () => {
+    showScreen('s-proposal');
+  });
+});
+
+// -- PROPOSAL: YES
+document.getElementById('btn-yes').addEventListener('click', () => {
+  fwActive = true;
+  showChapter('✨ Achievement Unlocked ✨', 'Forever Together', () => {
+    showScreen('s-yes');
+  });
+});
+
+// -- PROPOSAL: NO (button runs away!)
+const noBtn = document.getElementById('btn-no');
+let noClicks = 0;
+const noPhrases = [
+  "Are you sure? 👉👈", "Please reconsider...", "Think again!",
+  "Nope, don't click!", "Run away!", "🙈", "...", "No escaping love!"
+];
+
+noBtn.addEventListener('mouseenter', dodge);
+noBtn.addEventListener('click', dodge);
+
+function dodge() {
+  noClicks++;
+  const wrap = document.getElementById('btn-no-wrapper');
+  const vw = Math.max(document.documentElement.clientWidth || 0, window.innerWidth || 0) - 160;
+  const vh = Math.max(document.documentElement.clientHeight || 0, window.innerHeight || 0) - 60;
+  const x = Math.random() * vw;
+  const y = Math.random() * vh;
+  wrap.style.position = 'fixed';
+  wrap.style.left = x + 'px';
+  wrap.style.top = y + 'px';
+  wrap.style.transition = 'left 0.25s ease, top 0.25s ease';
+  noBtn.textContent = noPhrases[Math.min(noClicks - 1, noPhrases.length - 1)];
+  noBtn.style.fontSize = Math.max(0.6, 0.75 - noClicks * 0.03) + 'rem';
+}
+</script>
+</body>
+</html>
