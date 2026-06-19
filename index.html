@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>A Message From My Heart</title>
+<title>Ratiii — Phirse</title>
 <link href="https://fonts.googleapis.com/css2?family=Cinzel+Decorative:wght@400;700&family=Crimson+Pro:ital,wght@0,300;0,400;1,300;1,400&family=Share+Tech+Mono&display=swap" rel="stylesheet">
 <style>
   *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
@@ -383,7 +383,7 @@
 
 <!-- LOADER -->
 <div id="loader">
-  <div class="load-title">LOADING SAVE FILE: "US"</div>
+  <div class="load-title">LOADING SAVE FILE: "RATI + ME"</div>
   <div class="load-bar-bg"><div class="load-bar-fill" id="loadFill"></div></div>
   <div class="load-msg" id="loadMsg">Initializing feelings...</div>
 </div>
@@ -391,8 +391,8 @@
 <!-- SCREEN 1: TITLE -->
 <div class="screen" id="s-title">
   <div class="portrait-wrap"><div class="portrait-ring">💑</div></div>
-  <h1 class="game-title">A Quest of<br>the Heart</h1>
-  <p class="subtitle">— An Honest Confession —</p>
+  <h1 class="game-title">Ratiii,<br>Suno Toh</h1>
+  <p class="subtitle">— mai na ye sab phirse chahta hu —</p>
   <button class="btn-start" id="btn-begin">▶ &nbsp; Begin</button>
 </div>
 
@@ -409,16 +409,16 @@
 <!-- SCREEN 3: SORRY LIST -->
 <div class="screen" id="s-sorry">
   <div class="dialogue-box" style="max-width:700px">
-    <div class="speaker-name">📜 My Confessions — Things I'm Truly Sorry For</div>
+    <div class="speaker-name">📜 Wo Sab Jo Mai Miss Karta Hu</div>
     <div class="sorry-items" id="sorryList"></div>
   </div>
   <div style="max-width:700px;width:100%;margin-top:1rem">
     <div class="xp-section">
-      <div class="xp-label"><span>SINCERITY LEVEL</span><span id="sinLvl">0%</span></div>
+      <div class="xp-label"><span>FEELING LEVEL</span><span id="sinLvl">0%</span></div>
       <div class="xp-bar-bg"><div class="xp-bar-fill xp-love" id="sinBar"></div></div>
     </div>
     <div style="margin-top:1.5rem; text-align:center">
-      <button class="btn-start" id="btn-after-sorry">I hear your heart →</button>
+      <button class="btn-start" id="btn-after-sorry">suno meri promise →</button>
     </div>
   </div>
 </div>
@@ -427,7 +427,7 @@
 <div class="screen" id="s-promise">
   <div class="portrait-wrap"><div class="portrait-ring">🌹</div></div>
   <div class="dialogue-box">
-    <div class="speaker-name">💬 My Promise To You</div>
+    <div class="speaker-name">💬 Mera Promise Tujhe</div>
     <div class="dialogue-text" id="promise-text"></div>
     <div class="next-hint" id="hint2">[ click to continue ]</div>
   </div>
@@ -494,28 +494,28 @@
       </g>
     </svg>
   </div>
-  <div class="proposal-text">My Love,<br>Will You Marry Me?</div>
+  <div class="proposal-text">Ratiii,<br>Chalo Phirse Shuru Karein?</div>
   <div class="choice-box">
-    <button class="choice-btn btn-yes" id="btn-yes">💍 &nbsp; Yes, Always</button>
+    <button class="choice-btn btn-yes" id="btn-yes">💍 &nbsp; Haan, Chalo Phirse</button>
     <div id="btn-no-wrapper">
-      <button class="choice-btn btn-no" id="btn-no">Maybe not...</button>
+      <button class="choice-btn btn-no" id="btn-no">Abhi nahi...</button>
     </div>
   </div>
   <div style="margin-top:1.5rem; font-size:0.85rem; color:var(--muted); font-style:italic; text-align:center;">
-    You are my greatest adventure. ✨
+    Last baar bhi toh July mein hi shuru hua tha humara. ✨
   </div>
 </div>
 
 <!-- SCREEN 7: YES! -->
 <div class="screen" id="s-yes">
   <div class="heart-big">💍</div>
-  <div class="yes-title">She Said Yes!</div>
+  <div class="yes-title">Hum Phirse Saath Hain!</div>
   <div class="yes-sub" id="yes-sub">
-    And just like that, the most beautiful chapter of our story begins...<br>
-    I promise to love you every single day, more than yesterday, less than tomorrow.
+    Hum phirse ek sath rahenge, aur promise — hum dono phirse happy honge.<br>
+    Mujhe sirf ek hi cheez chahiye, aur wo ho tum, aur hum dono together.
   </div>
   <div style="font-family:'Share Tech Mono',monospace; font-size:0.7rem; color:var(--muted); margin-top:1rem; letter-spacing:0.1em;">
-    ∞ ACHIEVEMENT UNLOCKED: "FOREVER TOGETHER" ∞
+    ∞ ACHIEVEMENT UNLOCKED: "PHIRSE TOGETHER" ∞
   </div>
 </div>
 
@@ -740,16 +740,16 @@ function typewrite(el, text, speed, cb) {
 
 // -- TITLE → APOLOGY OPEN
 document.getElementById('btn-begin').addEventListener('click', () => {
-  showChapter('Chapter I', 'The Confession', () => {
+  showChapter('Chapter I', 'Wo Pyaara Time', () => {
     showScreen('s-apology-open');
     startApologyOpen();
   });
 });
 
 const apoLines = [
-  "My Love... before I say what my heart has been holding for so long, I need you to hear something first.",
-  "I have not always been the person you deserved. I have made mistakes — real ones, ones that hurt you — and I carry them every single day.",
-  "This isn't just words. This is me, kneeling before you in my heart, asking you to let me make it right."
+  "Ratiii... school mai peeche hath pakad ke baith the hum, yaad hai? Aur abhi tak jab tujhse baat karta hu I feel better I know frustration hota hai butt seeee I lovee you anddd agarrrr aaap mere sath achese rahogi then mai toh obv rahungaaaaaaa naaaa.",
+  "Yaar kitne ache time the wo jab hummmm meet kiya karteee, wowww... mai miss karta hu wo sab. Mai na ye sabb phirse chahta hu, hoo yaar.",
+  "Toh suno Ratiii, hum kya phirse apni relationship build kar sakte hai? Hum phirse ek sath rahenge, aur promise — hum dono phirse happy honge and mai apna promise rakhunga ki mai apko kabhi bhi ais abura feel hone nhi dunga."
 ];
 let apoIdx = 0, apoTyping = false;
 
@@ -774,7 +774,7 @@ document.getElementById('s-apology-open').addEventListener('click', () => {
       apoTyping = false;
     });
   } else {
-    showChapter('Chapter II', 'What I Did Wrong', () => {
+    showChapter('Chapter II', 'Jo Mai Miss Karta Hu', () => {
       showScreen('s-sorry');
       startSorry();
     });
@@ -783,14 +783,11 @@ document.getElementById('s-apology-open').addEventListener('click', () => {
 
 // -- SORRY LIST
 const sorryItems = [
-  { icon: '😞', text: 'For every time I made you feel unimportant — when you deserved to be my whole world.' },
-  { icon: '🗣️', text: 'For the harsh words I said in anger. Words I can\'t take back, but deeply wish I could.' },
-  { icon: '🚶', text: 'For the moments I was there physically, but not emotionally. You needed all of me.' },
-  { icon: '🔇', text: 'For the times I shut down instead of opening up to you.' },
-  { icon: '⏰', text: 'For not always prioritizing you and our relationship the way you deserved.' },
-  { icon: '🙈', text: 'For ignoring how my actions made you feel, even when you told me.' },
-  { icon: '💭', text: 'For every misunderstanding I let grow instead of facing it with you.' },
-  { icon: '🌧️', text: 'For every tear you shed because of me. Each one breaks my heart.' },
+  { icon: '🏫', text: 'School ke peeche hath pakad ke baithna — wo waqt.' },
+  { icon: '💬', text: 'Hamara wo meet ID, jiske bina kuch adhoora sa lagta tha.' },
+  { icon: '🧠', text: 'Tujhse baat karte hi purane chize yaaad aati hai .' },
+  { icon: '✨', text: 'Wo itna acha time — kitne ache pal the, sach mein.' },
+  { icon: '🌧️', text: 'Wo sab phirse karne ki chahat, har din thodi thodi.' },
 ];
 
 function startSorry() {
@@ -823,7 +820,7 @@ function animCount(id, from, to, dur, suffix) {
 }
 
 document.getElementById('btn-after-sorry').addEventListener('click', () => {
-  showChapter('Chapter III', 'My Promise', () => {
+  showChapter('Chapter III', 'Mera Promise', () => {
     showScreen('s-promise');
     startPromise();
   });
@@ -831,9 +828,9 @@ document.getElementById('btn-after-sorry').addEventListener('click', () => {
 
 // -- PROMISE
 const promiseLines = [
-  "I promise to be better. Not just to say it — to live it. Every morning I wake up, my first thought is how to be the person who deserves you.",
-  "I promise to listen more than I speak, to hold your heart gently, and to never take a single moment with you for granted.",
-  "Because loving you is the greatest privilege of my life. And I am done letting my mistakes get in the way of that."
+  "Hummm phirse ek sath rahenge, aur promise — hum dono phirse happy honge. Dekho mai na sirf ek hi chiz chahta hu.",
+  "Aur wo cheez ho tum, sirf tum, aur hum dono together. Aur kuch nahi chahiye.",
+  "Toh lets do it Ratiii, banate hai apne aap ko phirse. Dekho last time bhi toh July ke time start hua tha, toh lets do it again."
 ];
 let promIdx = 0, promTyping = false;
 
@@ -858,7 +855,7 @@ document.getElementById('s-promise').addEventListener('click', () => {
       promTyping = false;
     });
   } else {
-    showChapter('Chapter IV', 'The Stats of Us', () => {
+    showChapter('Chapter IV', 'Hum Dono Ki Stats', () => {
       showScreen('s-stats');
       startStats();
     });
@@ -882,7 +879,7 @@ function startStats() {
 }
 
 document.getElementById('btn-to-proposal').addEventListener('click', () => {
-  showChapter('Final Chapter', 'The Question', () => {
+  showChapter('Final Chapter', 'Chalo Phirse', () => {
     showScreen('s-proposal');
   });
 });
@@ -890,7 +887,7 @@ document.getElementById('btn-to-proposal').addEventListener('click', () => {
 // -- PROPOSAL: YES
 document.getElementById('btn-yes').addEventListener('click', () => {
   fwActive = true;
-  showChapter('✨ Achievement Unlocked ✨', 'Forever Together', () => {
+  showChapter('✨ Achievement Unlocked ✨', 'Phirse Together', () => {
     showScreen('s-yes');
   });
 });
